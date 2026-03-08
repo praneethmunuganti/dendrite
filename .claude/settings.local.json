@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//usr/local/lib/**)",
+      "Read(//opt/homebrew/lib/**)",
+      "Read(//Users/praneethmunuganti/.npm/**)",
+      "Read(//usr/local/bin/**)",
+      "Read(//opt/homebrew/bin/**)"
+    ]
+  }
+}
