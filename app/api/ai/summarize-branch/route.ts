@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const tree = buildNoteTree(topicNotes ?? [])
 
-    function findNode(nodes: ReturnType<typeof buildNoteTree>, id: string): ReturnType<typeof buildNoteTree>[0] | null {
+    const findNode = (nodes: ReturnType<typeof buildNoteTree>, id: string): ReturnType<typeof buildNoteTree>[0] | null => {
       for (const node of nodes) {
         if (node.id === id) return node
         const found = findNode(node.children, id)
