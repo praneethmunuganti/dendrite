@@ -8,10 +8,11 @@ import { createClient } from '@/lib/supabase/client'
 import type { Note, NoteVersion } from '@/types'
 import { formatDate } from '@/lib/utils'
 import {
-  Save, Trash2, History, ArrowLeft, ChevronDown, ChevronUp,
-  Sparkles, Plus, RotateCcw, X,
+  Save, Trash2, History, ArrowLeft,
+  Sparkles, Plus, X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import VersionGraph from '@/components/editor/VersionGraph'
 
 const RichTextEditor = dynamic(() => import('@/components/editor/RichTextEditor'), { ssr: false })
 
@@ -103,8 +104,8 @@ export default function NoteEditor({ note, versions, childNotes }: NoteEditorPro
       const data = await res.json()
       if (data.summary) setAiSummary(data.summary)
       else setError(data.error || 'Failed to generate summary')
-    } catch {
-      setError('Failed to reach AI service')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to reach AI service')
     } finally {
       setAiLoading(false)
     }
@@ -213,33 +214,16 @@ export default function NoteEditor({ note, versions, childNotes }: NoteEditorPro
       {showVersions && (
         <div className="mb-6 bg-white border border-gray-200 rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
-            <h3 className="text-sm font-semibold text-gray-900">Version History</h3>
+            <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+              Version History
+              <span className="text-xs font-normal text-gray-400">hover a version to restore</span>
+            </h3>
             <button onClick={() => setShowVersions(false)} className="text-gray-400 hover:text-gray-700">
               <X className="w-4 h-4" />
             </button>
           </div>
-          <div className="divide-y divide-gray-100 max-h-64 overflow-auto">
-            {currentVersions.map((v) => (
-              <div key={v.id} className="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">
-                      v{v.version_number}
-                    </span>
-                    <span className="text-sm font-medium text-gray-900">{v.title}</span>
-                  </div>
-                  {v.message && <p className="text-xs text-gray-500 mt-0.5">{v.message}</p>}
-                  <p className="text-xs text-gray-400 mt-0.5">{formatDate(v.created_at)}</p>
-                </div>
-                <button
-                  onClick={() => handleRestore(v)}
-                  className="flex items-center gap-1 text-xs text-gray-600 border border-gray-300 px-2 py-1 rounded hover:bg-gray-100"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  Restore
-                </button>
-              </div>
-            ))}
+          <div className="max-h-80 overflow-auto px-3">
+            <VersionGraph versions={currentVersions} onRestore={handleRestore} />
           </div>
         </div>
       )}
@@ -251,7 +235,7 @@ export default function NoteEditor({ note, versions, childNotes }: NoteEditorPro
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Note title"
-          className="w-full text-2xl font-bold border-0 border-b border-gray-200 pb-2 focus:outline-none focus:border-gray-400 placeholder-gray-300 bg-transparent"
+          className="w-full text-2xl font-bold text-gray-900 border-0 border-b border-gray-200 pb-2 focus:outline-none focus:border-gray-400 placeholder-gray-300 bg-transparent"
         />
 
         <input
@@ -259,7 +243,7 @@ export default function NoteEditor({ note, versions, childNotes }: NoteEditorPro
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           placeholder="Tags (comma-separated)"
-          className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
+          className="w-full text-sm text-gray-900 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
         />
 
         <RichTextEditor content={content} onChange={setContent} />
@@ -270,7 +254,7 @@ export default function NoteEditor({ note, versions, childNotes }: NoteEditorPro
             value={versionMessage}
             onChange={(e) => setVersionMessage(e.target.value)}
             placeholder="Version message (optional, like a git commit message)"
-            className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
+            className="flex-1 text-sm text-gray-900 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
           />
           <button
             onClick={handleSave}

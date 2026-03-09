@@ -82,7 +82,7 @@ function NewNoteForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Note title"
-          className="w-full text-2xl font-bold border-0 border-b border-gray-200 pb-2 focus:outline-none focus:border-gray-400 placeholder-gray-300 bg-transparent"
+          className="w-full text-2xl font-bold text-gray-900 border-0 border-b border-gray-200 pb-2 focus:outline-none focus:border-gray-400 placeholder-gray-300 bg-transparent"
         />
 
         <input
@@ -90,7 +90,7 @@ function NewNoteForm() {
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           placeholder="Tags (comma-separated, e.g. ai, research, ideas)"
-          className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
+          className="w-full text-sm text-gray-900 border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-200"
         />
 
         <RichTextEditor content={content} onChange={setContent} />
